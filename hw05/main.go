@@ -21,6 +21,30 @@ func main() {
 	fmt.Scan(&n)
 	genStr := randStr(n)
 	fmt.Println(genStr, "| длина строки:", len(genStr))
+
+	fmt.Println("Задание 2")
+	var statRunesInStr = make(map[rune]int)
+	var mux sync.Mutex
+	var wg sync.WaitGroup
+	for _, v := range genStr {
+		wg.Add(1)
+		go func(r rune) {
+			mux.Lock()
+			defer mux.Unlock()
+			statRunesInStr[r]++
+			wg.Done()
+		}(v)
+	}
+	wg.Wait()
+	var sum int
+	for key, i := range statRunesInStr /*statRunesInStr*/ {
+		sum += i
+		fmt.Printf("%s - %d; ", string(key), i)
+	}
+	fmt.Println("\nВсего rune в сумме:", sum)
+
+	fmt.Println("Задание 3")
+
 }
 
 var letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
