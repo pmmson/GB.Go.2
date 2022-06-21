@@ -11,6 +11,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"runtime"
 	"runtime/trace"
 	"sync"
 )
@@ -21,7 +22,7 @@ func main() {
 	// использовал решение урока 5
 	for {
 		fmt.Println("Для запуска демо 1 используйте: go run hw06/main.go 2>hw06/trace.out\n потом go tool trace hw06/trace.out")
-		fmt.Println("Для запуска демо 2 используйте: ...")
+		fmt.Println("Для запуска демо 2 используйте: go run hw06/main.go 2>hw06/trace2.out\n потом go tool trace hw06/trace2.out")
 		fmt.Println("Для запуска демо 3 используйте: go run -race hw06/main.go")
 		fmt.Println("Для выхода введите 0")
 
@@ -60,7 +61,21 @@ func main() {
 			return
 		case 2:
 			fmt.Println("Задание 2")
-			// в работе
+			// go run hw06/main.go 2>hw06/trace.out
+			// go tool trace hw06/trace.out
+
+			trace.Start(os.Stderr)
+			defer trace.Stop()
+
+			for i := 0; i < 10; i++ {
+				go func(u int) {
+					fmt.Println("I want to work", u)
+				}(i)
+				runtime.Gosched()
+				go func(u int) {
+					fmt.Println("I want to work too", u)
+				}(i)
+			}
 			return
 		case 3:
 			fmt.Println("Задание 3")
